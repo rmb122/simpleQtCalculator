@@ -70,7 +70,7 @@ void MainWindow::pushCharToScreen(QString chr){
 void MainWindow::calcTheQuery(){
     QString query = ui->screen->toPlainText();
     try{
-        std::string result = std::to_string(calc.calc(query));
+        std::string result = std::to_string(calc.calc(query.toStdString()));
         std::string::size_type dotIndex = result.rfind('.');
         if(dotIndex!=std::string::npos && result.back()=='0') {
             while (result.size() >= dotIndex + 1  && (result.back()=='0' || result.back()=='.')) { //删掉多余的0和.
@@ -105,7 +105,7 @@ void calculator::pushNums() {
 
     while (true)
     {
-        if (curritr != end && curritr->toLatin1() == '.') {
+        if (curritr != end && *curritr == '.') {
             if (hasDot == true) {
                 throw std::runtime_error("Unexcepted dot in number.");
             }
@@ -114,15 +114,15 @@ void calculator::pushNums() {
             continue;
         }
 
-        if (curritr != end && curritr->toLatin1() <= 57 && curritr->toLatin1() >= 48) {
+        if (curritr != end && *curritr <= 57 && *curritr >= 48) {
             if (hasDot) {
-                num += (curritr->toLatin1() - 48) / pow(10, digits);
+                num += (*curritr - 48) / pow(10, digits);
                 ++digits;
                 ++curritr;
             }
             else {
                 num *= 10;
-                num += curritr->toLatin1() - 48;
+                num += *curritr - 48;
                 ++curritr;
             }
             continue;
@@ -139,7 +139,7 @@ void calculator::pushSym() {
 }
 
 void calculator::calcTheTop() {
-    char oper = symbols.pop().toLatin1();
+    char oper = symbols.pop();
     double num1 = nums.pop();
 
     if (oper == '$') {
@@ -167,7 +167,7 @@ void calculator::calcTheTop() {
     }
 }
 
-double calculator::calc(QString expression) {
+double calculator::calc(std::string expression) {
     symbols.resize(expression.size());
     nums.resize(expression.size()); //用表达式的长度构造栈，保证不会溢出
 
@@ -177,22 +177,22 @@ double calculator::calc(QString expression) {
 
     while (curritr != end) //这里想了下不是if else嵌套地狱就是continue地狱，我选择continue地狱，看起来舒服点233
     {
-        if (curritr->toLatin1() <= 57 && curritr->toLatin1() >= 48) {
+        if (*curritr <= 57 && *curritr >= 48) {
             pushNums();
             continue;
         }
 
-        if (curritr->toLatin1() == '+' || curritr->toLatin1() == '-' || curritr->toLatin1() == '*' || curritr->toLatin1() == '/' || curritr->toLatin1() == '(' || curritr->toLatin1() == ')') {
-            if (curritr->toLatin1() == '-') { //如果是-号且前面紧跟着一个运算符，代表负号
-                if (curritr == beg || (curritr - 1)->toLatin1() == '+' || (curritr - 1)->toLatin1() == '-' || (curritr - 1)->toLatin1() == '*' || (curritr - 1)->toLatin1() == '/' || (curritr - 1)->toLatin1() == '(') {
+        if (*curritr == '+' || *curritr == '-' || *curritr == '*' || *curritr == '/' || *curritr == '(' || *curritr == ')') {
+            if (*curritr == '-') { //如果是-号且前面紧跟着一个运算符，代表负号
+                if (curritr == beg || *(curritr - 1) == '+' || *(curritr - 1) == '-' || *(curritr - 1) == '*' || *(curritr - 1) == '/' || *(curritr - 1) == '(') {
                     symbols.push('$'); //以$储存
                     curritr++;
                     continue;
                 }
             }
 
-            if (curritr->toLatin1() == ')') {
-                while (symbols.top().toLatin1() != '(') {
+            if (*curritr == ')') {
+                while (symbols.top() != '(') {
                     calcTheTop();
                 }
                 symbols.pop(); //pop掉(
@@ -200,13 +200,13 @@ double calculator::calc(QString expression) {
                 continue;
             }
 
-            if (symbols.isEmpty() || symbols.top().toLatin1() == '(') {
+            if (symbols.isEmpty() || symbols.top() == '(') {
                 pushSym();
                 continue;
             }
 
-            if (symbols.top().toLatin1() == '*' || symbols.top().toLatin1() == '/') {
-                if (curritr->toLatin1() == '*' || curritr->toLatin1() == '/' || curritr->toLatin1() == '+' || curritr->toLatin1() == '-') {
+            if (symbols.top() == '*' || symbols.top() == '/') {
+                if (*curritr == '*' || *curritr == '/' || *curritr == '+' || *curritr == '-') {
                     calcTheTop();
                     continue;
                 }
@@ -214,8 +214,8 @@ double calculator::calc(QString expression) {
                 continue;
             }
 
-            if (symbols.top().toLatin1() == '+' || symbols.top().toLatin1() == '-') {
-                if (curritr->toLatin1() == '+' || curritr->toLatin1() == '-') {
+            if (symbols.top() == '+' || symbols.top() == '-') {
+                if (*curritr == '+' || *curritr == '-') {
                     calcTheTop();
                     continue;
                 }
@@ -223,7 +223,7 @@ double calculator::calc(QString expression) {
                 continue;
             }
 
-            if (symbols.top().toLatin1() == '$') {
+            if (symbols.top() == '$') {
                 calcTheTop();
                 continue;
             }

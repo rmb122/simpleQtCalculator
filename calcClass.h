@@ -22,7 +22,7 @@ public:
 
     ~stack() { delete[] data; }
 
-    void resize(unsigned int length) {
+    void resize(size_t length) {
         delete[] data;
         data = new type[length];
         this->length = length;
@@ -64,19 +64,19 @@ public:
 
 class calculator {
 private:
-    stack<QChar> symbols;
+    stack<char> symbols;
     stack<double> nums;
 
-    QString::iterator beg;
-    QString::iterator curritr;
-    QString::iterator end;
+    std::string::iterator beg;
+    std::string::iterator curritr;
+    std::string::iterator end;
 
     void pushNums();
     void pushSym();
     void calcTheTop();
 public:
     calculator() : symbols(1), nums(1) {};
-    double calc(QString expression);
+    double calc(std::string expression);
 };
 
 

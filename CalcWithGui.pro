@@ -34,4 +34,4 @@ FORMS += \
         calcGui.ui
 
 RC_FILE += \
-        resouce.rc
+        resource.rc

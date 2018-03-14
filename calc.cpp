@@ -192,7 +192,7 @@ double calculator::calc(QString expression) {
             }
 
             if (curritr->toLatin1() == ')') {
-                while (symbols.top() != '(') {
+                while (symbols.top().toLatin1() != '(') {
                     calcTheTop();
                 }
                 symbols.pop(); //pop掉(

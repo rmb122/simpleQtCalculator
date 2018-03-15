@@ -235,6 +235,10 @@ double calculator::calc(std::string expression) {
     while (!symbols.isEmpty()) {
         calcTheTop();
     }
-
+    
+    if(nums.count != 1){
+        throw std::runtime_error("Invaild expression.");
+    }
+    
     return nums.top();
 }
